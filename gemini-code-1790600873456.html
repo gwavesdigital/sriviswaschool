@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SRI VISWA SCHOOL – PALAKOLLU | School Connect</title>
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="./assets/favicon.ico">
+<!-- PWA Manifest Link -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B3954">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --brand-primary: #0B3954; /* Deep Corporate Navy */
+    --brand-secondary: #198754; /* Emerald Laurel Green */
+    --brand-accent: #FFC107; /* Premium Gold */
+    --brand-bg: #F4F7FA;
+  }
+  body { background: var(--brand-bg); font-family:'Segoe UI',Tahoma,sans-serif; color: #2C3E50; margin:0; }
+  
+  /* ================= CINEMATIC ENTRANCE SCREEN ================= */
+  #cinematicWelcome {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: radial-gradient(circle at center, #134e6f 0%, #0B3954 50%, #061a24 100%);
+    z-index: 99999; display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    cursor: pointer; overflow: hidden;
+  }
+  .cinematic-glow {
+    position: absolute; width: 450px; height: 450px; background: radial-gradient(circle, rgba(25,135,84,0.25) 0%, rgba(11,57,84,0) 70%);
+    border-radius: 505px; animation: pulseGlow 4s infinite alternate; z-index: 1;
+  }
+  @keyframes pulseGlow {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.2); opacity: 1; }
+  }
+  .cinematic-card {
+    position: relative; z-index: 2; background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px;
+    padding: 40px 25px; text-align: center; max-width: 480px; width: 90%;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: cinematicEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes cinematicEntrance {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .cinematic-logo {
+    height: 85px; width: 85px; object-fit: contain; margin-bottom: 16px;
+    border-radius: 50%; padding: 8px; background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 30px rgba(255,193,7,0.4); animation: logoFloat 3s ease-in-out infinite;
+  }
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .cinematic-title { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .cinematic-subtitle { font-size: 13px; color: #a0aec0; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 25px; }
+  .cinematic-btn {
+    background: linear-gradient(135deg, #FFC107 0%, #e0a800 100%); color: #000;
+    font-weight: 700; border: none; padding: 12px 28px; border-radius: 50px; font-size: 15px;
+    box-shadow: 0 8px 20px rgba(255,193,7,0.3); transition: all 0.3s ease; display: inline-block;
+  }
+  .cinematic-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255,193,7,0.5); background: linear-gradient(135deg, #ffca2c 0%, #d39e00 100%); }
+
+  /* ================= APP LAYOUT & UI ================= */
+  .app-nav { background: #0B3954; box-shadow: 0 4px 12px rgba(11,57,84,0.15); padding: 10px 15px; }
+  .app-nav .navbar-brand { color:#fff; font-weight:800; font-size: 14px; }
+  .tab-btn { font-weight:600; border-radius: 6px; font-size: 13px; padding: 6px 12px; transition: all 0.2s; }
+  .card { border:none; box-shadow:0 6px 20px rgba(11,57,84,0.06); border-radius: 12px; }
+  .preview-box {
+    background:#fff; border:1px solid #d5dae3; padding:14px; border-radius:8px;
+    white-space:pre-wrap; font-family:'Consolas',monospace; font-size:13px;
+    max-height:350px; overflow:auto;
+  }
+  
+  /* PREMIUM PERMANENT LOGO HEADER BAR */
+  .school-header-bar {
+    display: flex; align-items: center; gap: 14px; background: #fff;
+    padding: 12px 18px; border-radius: 12px; box-shadow: 0 4px 15px rgba(11,57,84,0.08);
+    border-left: 5px solid #198754; border-right: 5px solid #0B3954;
+    margin-bottom: 16px;
+  }
+  .school-header-bar img { height: 50px; width: 50px; object-fit: contain; border-radius: 50%; padding: 3px; background: #f8f9fa; border: 2px solid #e9ecef; }
+  .school-header-bar .titles { line-height: 1.15; }
+  .school-header-bar .school-name { font-weight: 800; color: #0B3954; font-size: 16px; letter-spacing: 0.5px; }
+  .school-header-bar .tagline { font-size: 11.5px; color: #555; font-weight: 500; }
+
+  /* Hidden PNG Template used for clean high-res canvas rendering */
+  .png-template {
+    width:720px; background:#fff; padding:24px 28px;
+    border:4px solid #0B3954; border-radius:12px;
+    font-family:'Segoe UI',Tahoma,sans-serif; color:#1b1b1b;
+    box-sizing:border-box; text-align: left; position:absolute; left:-9999px; top:-9999px;
+  }
+  .png-header { text-align:center; border-bottom:3px solid #0B3954; padding-bottom:12px; }
+  .png-logo { height:85px; display:block; margin:0 auto 6px; object-fit: contain; }
+  .png-school { font-size:22px; font-weight:800; color:#0B3954; letter-spacing:.5px; }
+  .png-title { font-size:15px; font-weight:700; margin-top:4px; letter-spacing:3px; color:#198754; }
+  .png-meta { display:flex; justify-content:space-between; margin-top:12px; font-size:14px; font-weight:600; }
+  .png-section-title {
+    margin-top:16px; font-size:15px; font-weight:800; color:#0B3954;
+    text-transform:uppercase; letter-spacing:1px;
+    border-left:5px solid #FFC107; padding-left:8px;
+  }
+  .png-table { width:100%; border-collapse:collapse; margin-top:8px; font-size:13.5px; }
+  .png-table td { padding:6px 8px; border-bottom:1px dashed #c9cfda; vertical-align:top; }
+  .png-sub { width:160px; font-weight:700; color:#0B3954; }
+  .png-val { color:#222; }
+  .png-block { margin-top:14px; font-size:14px; line-height:1.6; }
+  .png-endorse { margin-top:18px; padding:12px 16px; background:#f0f7ff;
+    border-left:5px solid #198754; border-radius:6px; font-size:13.5px; line-height:1.6; }
+  .png-endorse-title { font-weight:800; color:#0B3954; margin-bottom:4px; }
+  
+  #installAppBtn { display: none; background-color: #FFC107; color: #000; font-weight: 700; border: none; font-size: 12px; padding: 5px 10px; }
+  #installAppBtn:hover { background-color: #e0a800; }
+</style>
+</head>
+<body>
+
+<!-- ================= CINEMATIC ENTRANCE SCREEN ================= -->
+<div id="cinematicWelcome">
+  <div class="cinematic-glow"></div>
+  <div class="cinematic-card">
+    <img src="./assets/logo.png" class="cinematic-logo" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3257/3257917.png'" />
+    <div class="cinematic-title">Sri Viswa School Connect</div>
+    <div class="cinematic-subtitle">Palakollu • Digital Communication Portal</div>
+    <button class="cinematic-btn" onclick="enterPortal()">🚀 Enter Portal</button>
+  </div>
+</div>
+
+<nav class="navbar app-nav navbar-dark">
+  <div class="container-fluid px-2">
+    <div class="d-flex align-items-center gap-1">
+      <button class="btn btn-sm btn-outline-light fw-semibold" onclick="goHome()" style="font-size: 12px; padding: 5px 9px;">🏠 Home</button>
+      <button id="installAppBtn" class="btn btn-sm btn-warning" onclick="installApp()">📱 Install App</button>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <div class="btn-group" role="group">
+        <button class="btn btn-light tab-btn" onclick="showTab('teacher',this)">Staff Portal</button>
+        <button class="btn btn-outline-light tab-btn" onclick="requestPrincipalAccess(this)">Principal Desk</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-3 px-2 px-md-3">
+
+  <div class="school-header-bar">
+    <img src="./assets/logo.png" alt="School Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3257/3257917.png'" />
+    <div class="titles">
+      <div class="school-name">SRI VISWA SCHOOL – PALAKOLLU</div>
+      <div class="tagline">Official Digital Communication & E-Diary Portal</div>
+    </div>
+  </div>
+
+  <!-- ============ STAFF PORTAL TAB ============ -->
+  <div id="tab-teacher">
+    <div class="card">
+      <div class="card-body p-3 p-md-4">
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <label class="form-label fw-semibold small">Date</label>
+            <input type="date" id="diaryDate" class="form-control form-control-sm bg-light" readonly />
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label fw-semibold small">Type</label>
+            <select id="commType" class="form-select form-select-sm border-primary fw-semibold text-primary" onchange="toggleCommType(); generateMessage();">
+              <option value="ediary">📘 E-Diary</option>
+              <option value="announcement">📢 Announcement</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3" id="classSelectionBox">
+            <label class="form-label fw-semibold small">Class</label>
+            <select id="classSelect" class="form-select form-select-sm" onchange="onClassChange()">
+              <option value="">-- Select Class --</option>
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option>
+              <option>7</option><option>8</option><option>9</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label fw-semibold small">Staff Name</label>
+            <input type="text" id="teacherName" class="form-control form-control-sm" placeholder="e.g. Mrs. Lakshmi" oninput="generateMessage()" onblur="onTeacherBlur()" />
+          </div>
+        </div>
+
+        <div id="announcementScopeBox" class="row g-3 mb-3" style="display:none;">
+          <div class="col-md-5">
+            <label class="form-label fw-semibold small text-dark">Announcement Level Scope</label>
+            <select id="announcementScope" class="form-select form-select-sm border-warning" onchange="toggleScope()">
+              <option value="school">🌐 School-Wide (All Classes)</option>
+              <option value="class">🎓 Class-Specific</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- E-DIARY SECTION -->
+        <div id="ediarySection">
+          <h6 class="mt-3 text-primary fw-bold">📚 Subject-wise Diary Notes</h6>
+          <div id="subjectInputs" class="row g-2"></div>
+        </div>
+
+        <!-- ANNOUNCEMENT SECTION -->
+        <div id="announcementSection" style="display:none;">
+          <h6 class="mt-3 text-warning fw-bold text-dark">📢 Announcement Content</h6>
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">Announcement Title / Event Name</label>
+            <input type="text" id="announcementTitle" class="form-control form-control-sm" placeholder="e.g. Annual Sports Meet" oninput="generateMessage()" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">Detailed Instructions & Message</label>
+            <textarea id="announcementBody" class="form-control form-control-sm" rows="4" placeholder="Write full details here..." oninput="generateMessage()"></textarea>
+          </div>
+        </div>
+
+        <!-- BOTTOM REMARKS -->
+        <div class="mt-3 pt-2 border-top" id="remarksFooterBox">
+          <label class="form-label fw-semibold small text-danger">📝 Class Teacher Remarks / Footer Note</label>
+          <input type="text" id="teacherRemark" class="form-control form-control-sm" placeholder="e.g. Please sign diary daily." oninput="generateMessage()" />
+        </div>
+
+        <!-- EXACT 4 STAFF PORTAL BUTTONS -->
+        <div class="mt-4 d-flex flex-wrap gap-2">
+          <button class="btn btn-primary btn-sm fw-semibold px-4" onclick="generateMessage()">Generate</button>
+          <button class="btn btn-outline-secondary btn-sm px-4" onclick="clearForm()">Clear</button>
+          <button class="btn btn-warning btn-sm fw-semibold px-4 text-dark" onclick="saveDraft()">Save Draft</button>
+          <button class="btn btn-dark btn-sm fw-semibold px-4" onclick="sendToPrincipal()">Sent to Principal Desk</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-dark text-white fw-semibold py-2 small">WhatsApp Message Preview</div>
+      <div class="card-body p-2">
+        <pre id="messagePreview" class="preview-box mb-0">Fill form fields and click "Generate"</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PRINCIPAL DESK TAB (PIN PROTECTED) ============ -->
+  <div id="tab-principal" style="display:none">
+    <div class="card">
+      <div class="card-body p-3">
+        <h5 class="fw-bold text-primary mb-3">🛡️ Principal Management Desk</h5>
+        <label class="form-label fw-semibold small">Select Submitted Communication for Approval & Sharing</label>
+        <select id="draftSelect" class="form-select form-select-sm mb-3" onchange="loadDraft()"></select>
+
+        <div id="principalPanel" style="display:none">
+          <pre id="pMsgPreview" class="preview-box mb-3"></pre>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Principal Name (for endorsement signature)</label>
+            <input type="text" id="pPrincipalName" class="form-control form-control-sm" onblur="savePrincipalName()" />
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-success btn-sm fw-semibold px-3" onclick="approveDraft()">✅ Approve & Seal</button>
+            <button id="principalShareMsgBtn" class="btn btn-dark btn-sm fw-semibold px-3" onclick="shareMessageToWhatsApp()" disabled title="Approve draft first">💬 Share Message to WhatsApp (Locked)</button>
+            <button id="principalSharePngBtn" class="btn btn-outline-success btn-sm fw-semibold px-3" onclick="sharePngToWhatsApp()" disabled title="Approve draft first">🖼️ Send PNG to WhatsApp (Locked)</button>
+            <button class="btn btn-primary btn-sm fw-semibold px-3" onclick="downloadPNGPrincipal()">Download PNG</button>
+            <button class="btn btn-outline-danger btn-sm px-3" onclick="deleteDraft()">Delete</button>
+          </div>
+        </div>
+
+        <div id="emptyMsg" class="text-muted small">No pending drafts available for review.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BIN TAB (Accessible from Principal Desk or review) ============ -->
+  <div id="tab-bin" style="display:none">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-danger mb-0">🗑️ Records Bin (Auto-clears after 7 days)</h6>
+          <button class="btn btn-sm btn-outline-danger" onclick="clearEntireBin()">Clear Entire Bin</button>
+        </div>
+        <p class="text-muted small mb-2">Showing records from the past week.</p>
+        <div class="table-responsive">
+          <table class="table table-striped table-sm align-middle" style="font-size: 13px;">
+            <thead><tr><th>Date</th><th>Type</th><th>Class / Scope</th><th>Staff Name</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="binBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN PNG TEMPLATE -->
+<div id="pngTemplateTeacher" class="png-template">
+  <div class="png-header">
+    <img src="./assets/logo.png" id="pngLogo" class="png-logo" alt="Logo" onerror="this.style.display='none'" />
+    <div class="png-school">SRI VISWA SCHOOL – PALAKOLLU</div>
+    <div class="png-title" id="pngCardTitle">STUDENT E-DIARY</div>
+    <div class="png-meta">
+      <span>Date: <b id="pngDateT">--</b></span>
+      <span id="pngClassMetaT">Class: <b id="pngClassT">--</b></span>
+    </div>
+  </div>
+  
+  <div id="pngSubjectContainer">
+    <div class="png-section-title">Subject-wise Notes</div>
+    <table class="png-table"><tbody id="pngSubjectsT"></tbody></table>
+  </div>
+
+  <div id="pngAnnouncementContainer" style="display:none;">
+    <div class="png-section-title">Notice Details</div>
+    <div class="p-3 bg-light rounded mt-2 border" id="pngAnnouncementText" style="white-space: pre-wrap; font-size:14px; text-align: left;">-</div>
+  </div>
+
+  <div class="png-block" id="pngRemarksBlockT">
+    <div><b>Teacher Remarks:</b> <span id="pngRemarkT">-</span></div>
+  </div>
+  <div class="png-block">
+    <div><b>Issued By:</b> <span id="pngTeacherT">-</span></div>
+  </div>
+  <div class="png-endorse">
+    <div class="png-endorse-title">Principal Endorsement</div>
+    <div>Approved by <b id="pngPrincipalT">-</b></div>
+    <div>Date/Time: <span id="pngTimeT">-</span></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+/* ================= GLOBAL SETUP ================= */
+const CONFIG = {
+  SCHOOL_NAME: "SRI VISWA SCHOOL – PALAKOLLU",
+  PRINCIPAL_PIN: "12092020",
+  DEFAULT_PRINCIPAL: "Principal, SRI VISWA SCHOOL",
+  STORAGE_KEY: "sri_viswa_comm_records_v17",
+  TEACHER_KEY: "sri_viswa_teacher_names",
+  PRINCIPAL_NAME_KEY: "sri_viswa_principal_name"
+};
+const SUBJECTS = ["English","Hindi","Telugu","Mathematics","General Science","Social Studies","Computer Science","GK / Moral Sci","Drawing / Craft","Physical Education"];
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('diaryDate').value = todayISO();
+  document.getElementById('principalName').value = localStorage.getItem(CONFIG.PRINCIPAL_NAME_KEY) || '';
+
+  const wrap = document.getElementById('subjectInputs');
+  wrap.innerHTML = '';
+  SUBJECTS.forEach(s => {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-md-6';
+    col.innerHTML = `<label class="form-label mb-1 text-secondary fw-semibold" style="font-size:11.5px;">${s}</label>
+      <input type="text" class="form-control form-control-sm subject-input" data-subject="${s}" placeholder="Write notes for ${s}..." oninput="generateMessage()" />`;
+    wrap.appendChild(col);
+  });
+  generateMessage();
+});
+
+function enterPortal(){
+  const w = document.getElementById('cinematicWelcome');
+  w.style.opacity = '0';
+  w.style.transform = 'scale(1.05)';
+  setTimeout(() => w.style.display = 'none', 800);
+}
+
+function goHome(){
+  showTab('teacher', document.querySelectorAll('.tab-btn')[0]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ================= PRINCIPAL PIN AUTH ================= */
+function requestPrincipalAccess(btn){
+  const pin = prompt("Enter Principal Access PIN:");
+  if(pin === null) return;
+  if(pin === CONFIG.PRINCIPAL_PIN){
+    showTab('principal', btn);
+  } else {
+    alert("Incorrect PIN! Access denied.");
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail: ', err));
+  });
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installAppBtn').style.display = 'inline-block';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        document.getElementById('installAppBtn').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+/* ================= HELPERS ================= */
+function escapeHtml(s){ if(s==null)return''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function formatDate(iso){ if(!iso)return''; const[y,m,d]=iso.split('-'); return`${d}-${m}-${y}`; }
+function formatDateTime(iso){ const d=new Date(iso); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); const yy=d.getFullYear(); let hh=d.getHours(); const min=String(d.getMinutes()).padStart(2,'0'); const ap=hh>=12?'PM':'AM'; hh=hh%12||12; return`${dd}-${mm}-${yy} ${String(hh).padStart(2,'0')}:${min} ${ap}`; }
+function todayISO(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+/* ================= STORAGE ================= */
+function cleanOldRecords(records){
+  const now = new Date().getTime();
+  const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+  return records.filter(r => (now - new Date(r.createdAt || r.date).getTime()) <= oneWeekMs);
+}
+
+function getRecords(){
+  try{
+    let raw = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY))||[];
+    let cleaned = cleanOldRecords(raw);
+    if(cleaned.length !== raw.length) localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(cleaned));
+    return cleaned;
+  }catch(e){ return []; }
+}
+function setRecords(a){ localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(a)); }
+function saveRecordItem(item){ const a=getRecords(); const i=a.findIndex(x=>x.id===item.id); if(i>=0)a[i]=item; else a.push(item); setRecords(a); }
+function deleteRecordItem(id){ setRecords(getRecords().filter(x=>x.id!==id)); }
+
+function getTeacherName(c){ try{ const m=JSON.parse(localStorage.getItem(CONFIG.TEACHER_KEY))||{}; return m[c]||''; }catch(e){ return ''; } }
+function setTeacherName(c,n){ let m={}; try{ m=JSON.parse(localStorage.getItem(CONFIG.TEACHER_KEY))||{}; }catch(e){} m[c]=n; localStorage.setItem(CONFIG.TEACHER_KEY,JSON.stringify(m)); }
+function savePrincipalName(){ localStorage.setItem(CONFIG.PRINCIPAL_NAME_KEY, document.getElementById('pPrincipalName').value.trim()); }
+
+function onClassChange(){
+  const c = document.getElementById('classSelect').value;
+  if(c) document.getElementById('teacherName').value = getTeacherName(c);
+  generateMessage();
+}
+function onTeacherBlur(){
+  const c = document.getElementById('classSelect').value;
+  const t = document.getElementById('teacherName').value.trim();
+  if(c && t) setTeacherName(c, t);
+  generateMessage();
+}
+
+/* ================= MODES & SCOPE ================= */
+function toggleCommType(){
+  const type = document.getElementById('commType').value;
+  if(type === 'ediary'){
+    document.getElementById('ediarySection').style.display = 'block';
+    document.getElementById('announcementSection').style.display = 'none';
+    document.getElementById('announcementScopeBox').style.display = 'none';
+    document.getElementById('classSelectionBox').style.display = 'block';
+    document.getElementById('remarksFooterBox').style.display = 'block';
+  } else {
+    document.getElementById('ediarySection').style.display = 'none';
+    document.getElementById('announcementSection').style.display = 'block';
+    document.getElementById('announcementScopeBox').style.display = 'flex';
+    document.getElementById('remarksFooterBox').style.display = 'none';
+    toggleScope();
+  }
+}
+
+function toggleScope(){
+  const scope = document.getElementById('announcementScope').value;
+  if(scope === 'school'){
+    document.getElementById('classSelectionBox').style.display = 'none';
+  } else {
+    document.getElementById('classSelectionBox').style.display = 'block';
+  }
+  generateMessage();
+}
+
+/* ================= MESSAGE & TEMPLATE ================= */
+function buildMessage(d){
+  const L=[];
+  L.push(`🏫 *${CONFIG.SCHOOL_NAME}*`);
+  if(d.type === 'announcement'){
+    L.push(`📢 *SCHOOL ANNOUNCEMENT*`);
+    L.push(`📅 Date: ${formatDate(d.date)}`);
+    if(d.scope === 'school'){
+      L.push(`🎓 Scope: All Classes (School-Wide)`);
+    } else {
+      L.push(`🎓 Class: ${d.class || 'Not Specified'}`);
+    }
+    L.push('');
+    L.push(`📌 *${d.announcementTitle || 'General Notice'}*`);
+    L.push(`${d.announcementBody || '-'}`);
+  } else {
+    L.push(`📘 *STUDENT E-DIARY*`);
+    L.push(`📅 Date: ${formatDate(d.date)}`);
+    L.push(`🎓 Class: ${d.class || 'Not Specified'}`);
+    L.push('');
+    L.push('📚 *Subject-wise Diary Notes*');
+    SUBJECTS.forEach(s=>{
+      if(d.subjects[s]) L.push(`• ${s}: ${d.subjects[s]}`);
+    });
+    L.push('');
+    L.push(`📝 *Teacher Remarks:* ${d.remark||'-'}`);
+  }
+  L.push('');
+  L.push(`👩‍🏫 Issued By: ${d.teacher||'Staff'}`);
+  if(d.approved && d.principal){
+    L.push('');
+    L.push('✅ *Principal Endorsement*');
+    L.push(`Approved by ${d.principal}`);
+    L.push(`Date/Time: ${formatDateTime(d.approvedAt)}`);
+  }
+  return L.join('\n');
+}
+
+function showTab(name, btn){
+  ['teacher','principal','bin'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = (t===name)?'block':'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('btn-light'); b.classList.add('btn-outline-light'); });
+  if(btn){ btn.classList.remove('btn-outline-light'); btn.classList.add('btn-light'); }
+  if(name==='principal') refreshDrafts();
+  if(name==='bin') refreshBin();
+}
+
+function collectForm(){
+  const date=document.getElementById('diaryDate').value;
+  const type=document.getElementById('commType').value;
+  const scope=document.getElementById('announcementScope').value;
+  const cls=document.getElementById('classSelect').value;
+  const teacher=document.getElementById('teacherName').value.trim();
+  const principal=document.getElementById('pPrincipalName').value.trim();
+  const remark=document.getElementById('teacherRemark').value.trim();
+  const announcementTitle=document.getElementById('announcementTitle').value.trim();
+  const announcementBody=document.getElementById('announcementBody').value.trim();
+  
+  const subjects={};
+  document.querySelectorAll('.subject-input').forEach(i=>subjects[i.dataset.subject]=i.value.trim());
+  return {date,type,scope,class:cls,teacher,principal,remark,announcementTitle,announcementBody,subjects};
+}
+
+function generateMessage(){
+  const d=collectForm();
+  if(!d.date) return;
+  const msg = buildMessage(d);
+  document.getElementById('messagePreview').textContent = msg;
+  preparePNGTemplate(d);
+  return msg;
+}
+
+function preparePNGTemplate(d){
+  document.getElementById('pngDateT').textContent = formatDate(d.date);
+  const classMetaEl = document.getElementById('pngClassMetaT');
+  if(d.type === 'announcement' && d.scope === 'school'){
+    classMetaEl.innerHTML = 'Scope: <b>All Classes (School-Wide)</b>';
+  } else {
+    classMetaEl.innerHTML = `Class: <b>${d.class || 'All'}</b>`;
+  }
+
+  const titleEl = document.getElementById('pngCardTitle');
+  const subCont = document.getElementById('pngSubjectContainer');
+  const annCont = document.getElementById('pngAnnouncementContainer');
+  const remarksBlock = document.getElementById('pngRemarksBlockT');
+  
+  if(d.type === 'announcement'){
+    titleEl.textContent = "SCHOOL ANNOUNCEMENT";
+    subCont.style.display = 'none';
+    annCont.style.display = 'block';
+    remarksBlock.style.display = 'none';
+    document.getElementById('pngAnnouncementText').innerHTML = `<b>${escapeHtml(d.announcementTitle || 'Notice')}</b><br>${escapeHtml(d.announcementBody || 'No details provided.')}`;
+  } else {
+    titleEl.textContent = "STUDENT E-DIARY";
+    subCont.style.display = 'block';
+    annCont.style.display = 'none';
+    remarksBlock.style.display = 'block';
+    
+    const tb = document.getElementById('pngSubjectsT'); 
+    tb.innerHTML = '';
+    SUBJECTS.forEach(s=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="png-sub">${s}</td><td class="png-val">${escapeHtml(d.subjects[s] || '-')}</td>`;
+      tb.appendChild(tr);
+    });
+    document.getElementById('pngRemarkT').textContent = d.remark || '-';
+  }
+
+  document.getElementById('pngTeacherT').textContent = d.teacher || 'Staff';
+  document.getElementById('pngPrincipalT').textContent = d.principal || localStorage.getItem(CONFIG.PRINCIPAL_NAME_KEY) || CONFIG.DEFAULT_PRINCIPAL;
+  document.getElementById('pngTimeT').textContent = d.approvedAt ? formatDateTime(d.approvedAt) : 'Pending Approval';
+}
+
+function saveDraft(){
+  const d=collectForm();
+  const targetClass = (d.type === 'announcement' && d.scope === 'school') ? 'ALL' : (d.class || 'General');
+  const id=`${d.type}_${targetClass}_${d.date}`;
+  const draft={ id, ...d, approved:false, createdAt:new Date().toISOString() };
+  const ex=getRecords().find(x=>x.id===id);
+  if(ex){ draft.approved=ex.approved; draft.principal=ex.principal; draft.approvedAt=ex.approvedAt; }
+  saveRecordItem(draft);
+  if(d.class) setTeacherName(d.class, d.teacher);
+  alert('Communication draft saved successfully ✅');
+}
+
+function sendToPrincipal(){
+  const d = collectForm();
+  if(!d.teacher){ alert('Please enter staff name'); return; }
+  saveDraft();
+  alert('Successfully sent to Principal Desk for review & approval! 📤');
+}
+
+function clearForm(){
+  if(!confirm('Clear all form entries?')) return;
+  document.querySelectorAll('.subject-input').forEach(i=>i.value='');
+  document.getElementById('teacherRemark').value = '';
+  document.getElementById('announcementTitle').value = '';
+  document.getElementById('announcementBody').value = '';
+  document.getElementById('classSelect').value = '';
+  document.getElementById('teacherName').value = '';
+  generateMessage();
+  alert('Form cleared ✅');
+}
+
+function downloadPNGPrincipal(){
+  const id = document.getElementById('draftSelect').value;
+  if(!id) return;
+  const d = getRecords().find(x=>x.id===id);
+  if(!d) return;
+
+  preparePNGTemplate(d);
+  const el = document.getElementById('pngTemplateTeacher');
+  html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `Approved_${d.type}_${d.date}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(err => alert('PNG generation failed.'));
+}
+
+/* ================= PRINCIPAL DESK ================= */
+function refreshDrafts(){
+  const records = getRecords();
+  const select = document.getElementById('draftSelect');
+  const panel = document.getElementById('principalPanel');
+  const empty = document.getElementById('emptyMsg');
+  select.innerHTML = '<option value="">-- Choose a submitted communication item --</option>';
+  
+  if(records.length === 0){
+    panel.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  records.forEach(d=>{
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    const typeLabel = d.type === 'announcement' ? '📢 Announcement' : '📘 E-Diary';
+    const scopeLabel = d.scope === 'school' ? 'All Classes' : `Class ${d.class || 'General'}`;
+    opt.textContent = `${typeLabel} | ${scopeLabel} - Date: ${formatDate(d.date)} ${d.approved ? '✅ (Approved)' : '⏳ (Pending)'}`;
+    select.appendChild(opt);
+  });
+}
+
+function loadDraft(){
+  const id = document.getElementById('draftSelect').value;
+  const panel = document.getElementById('principalPanel');
+  const shareMsgBtn = document.getElementById('principalShareMsgBtn');
+  const sharePngBtn = document.getElementById('principalSharePngBtn');
+  if(!id){ panel.style.display='none'; return; }
+  
+  const records = getRecords();
+  const d = records.find(x=>x.id===id);
+  if(!d) return;
+
+  panel.style.display = 'block';
+  document.getElementById('pMsgPreview').textContent = buildMessage(d);
+  document.getElementById('pPrincipalName').value = d.principal || localStorage.getItem(CONFIG.PRINCIPAL_NAME_KEY) || CONFIG.DEFAULT_PRINCIPAL;
+
+  if(d.approved){
+    shareMsgBtn.disabled = false;
+    shareMsgBtn.className = "btn btn-success btn-sm fw-semibold px-3";
+    shareMsgBtn.textContent = "💬 Share Message to WhatsApp";
+
+    sharePngBtn.disabled = false;
+    sharePngBtn.className = "btn btn-success btn-sm fw-semibold px-3";
+    sharePngBtn.textContent = "🖼️ Send PNG to WhatsApp";
+  } else {
+    shareMsgBtn.disabled = true;
+    shareMsgBtn.className = "btn btn-dark btn-sm fw-semibold px-3";
+    shareMsgBtn.textContent = "💬 Share Message to WhatsApp (Locked)";
+
+    sharePngBtn.disabled = true;
+    sharePngBtn.className = "btn btn-outline-success btn-sm fw-semibold px-3";
+    sharePngBtn.textContent = "🖼️ Send PNG to WhatsApp (Locked)";
+  }
+}
+
+function approveDraft(){
+  const id = document.getElementById('draftSelect').value;
+  if(!id) return;
+  const records = getRecords();
+  const d = records.find(x=>x.id===id);
+  if(!d) return;
+
+  const pName = document.getElementById('pPrincipalName').value.trim() || CONFIG.DEFAULT_PRINCIPAL;
+  d.principal = pName;
+  d.approved = true;
+  d.approvedAt = new Date().toISOString();
+  
+  saveRecordItem(d);
+  savePrincipalName();
+  
+  document.getElementById('pMsgPreview').textContent = buildMessage(d);
+  refreshDrafts();
+  document.getElementById('draftSelect').value = id;
+  loadDraft();
+  alert('Communication approved and sealed! WhatsApp options are now unlocked ✅');
+}
+
+function shareMessageToWhatsApp(){
+  const id = document.getElementById('draftSelect').value;
+  if(!id) return;
+  const records = getRecords();
+  const d = records.find(x=>x.id===id);
+  if(!d || !d.approved){ alert('Please approve and seal draft first.'); return; }
+
+  const msg = buildMessage(d);
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function sharePngToWhatsApp(){
+  const id = document.getElementById('draftSelect').value;
+  if(!id) return;
+  const records = getRecords();
+  const d = records.find(x=>x.id===id);
+  if(!d || !d.approved){ alert('Please approve and seal draft first.'); return; }
+
+  preparePNGTemplate(d);
+  const el = document.getElementById('pngTemplateTeacher');
+  html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
+    canvas.toBlob(blob => {
+      const file = new File([blob], `Approved_${d.type}_${d.date}.png`, { type: 'image/png' });
+      if(navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'Sri Viswa School Communication',
+          text: buildMessage(d)
+        }).catch(() => {
+          alert('Sharing cancelled or not supported. Downloading PNG instead.');
+          downloadPNGPrincipal();
+        });
+      } else {
+        downloadPNGPrincipal();
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("📁 Approved PNG card downloaded! Attach the image to share:\n\n" + buildMessage(d))}`, '_blank');
+      }
+    });
+  }).catch(err => alert('PNG image generation failed.'));
+}
+
+function deleteDraft(){
+  const id = document.getElementById('draftSelect').value;
+  if(!id) return;
+  if(!confirm('Delete this record?')) return;
+  deleteRecordItem(id);
+  document.getElementById('principalPanel').style.display = 'none';
+  refreshDrafts();
+  alert('Record deleted.');
+}
+
+/* ================= BIN TAB ================= */
+function refreshBin(){
+  const records = getRecords();
+  const tbody = document.getElementById('binBody');
+  tbody.innerHTML = '';
+
+  if(records.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Bin is empty or all records exceeded 7 days.</td></tr>`;
+    return;
+  }
+
+  records.sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(d=>{
+    const tr = document.createElement('tr');
+    const typeBadge = d.type === 'announcement' ? '<span class="badge bg-warning text-dark">Announcement</span>' : '<span class="badge bg-primary">E-Diary</span>';
+    const scopeLabel = (d.type === 'announcement' && d.scope === 'school') ? 'All Classes' : `Class ${d.class || 'General'}`;
+    tr.innerHTML = `
+      <td>${formatDate(d.date)}</td>
+      <td>${typeBadge}</td>
+      <td><b>${scopeLabel}</b></td>
+      <td>${escapeHtml(d.teacher || 'Staff')}</td>
+      <td>${d.approved ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-secondary">Pending</span>'}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary py-0 px-2" onclick="loadBinItem('${d.id}')">Review</button>
+        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteBinItem('${d.id}')">Del</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function loadBinItem(id){
+  const d = getRecords().find(x=>x.id===id);
+  if(!d) return;
+  const pin = prompt("Enter Principal Access PIN to review record:");
+  if(pin === CONFIG.PRINCIPAL_PIN){
+    showTab('principal', document.querySelectorAll('.tab-btn')[1]);
+    document.getElementById('draftSelect').value = id;
+    loadDraft();
+  } else if(pin !== null) {
+    alert("Incorrect PIN!");
+  }
+}
+
+function deleteBinItem(id){
+  if(!confirm('Delete this record permanently?')) return;
+  deleteRecordItem(id);
+  refreshBin();
+}
+
+function clearEntireBin(){
+  if(!confirm('Are you sure you want to clear all records from the Bin?')) return;
+  localStorage.removeItem(CONFIG.STORAGE_KEY);
+  refreshBin();
+  alert('Bin cleared ✅');
+}
+</script>
+</body>
+</html>
